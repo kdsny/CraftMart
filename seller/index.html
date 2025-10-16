@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraftMart Seller - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'craftmart': {
+                            '50': '#fef7f3','100': '#fdeee6','200': '#fbd9c7','300': '#f8c4a8','400': '#f4a47a','500': '#ad6234','600': '#9c572e','700': '#8b4c28','800': '#7a4122','900': '#69361c','950': '#582b16'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-craftmart-50 via-craftmart-100 to-craftmart-200 flex items-center justify-center p-4">
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-craftmart-300 rounded-full mix-blend-multiply filter blur-xl opacity-20"></div>
+        <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-craftmart-400 rounded-full mix-blend-multiply filter blur-xl opacity-20"></div>
+    </div>
+    <div class="relative z-10 w-full max-w-md">
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8">
+            <div class="text-center mb-8">
+                <img src="../logo/CraftMart_logo.png" alt="CraftMart Logo" class="h-16 w-auto mx-auto">
+                <h2 class="text-2xl font-bold text-craftmart-900 mt-4">Seller Login</h2>
+                <p class="text-craftmart-600">Access your seller dashboard</p>
+            </div>
+            <form id="sellerLoginForm" class="space-y-6">
+                <div class="space-y-2">
+                    <label for="email" class="block text-sm font-medium text-craftmart-800">Email</label>
+                    <input id="email" name="email" type="email" required class="w-full px-4 py-3 border-2 border-craftmart-200 rounded-xl focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" placeholder="seller@example.com" />
+                </div>
+                <div class="space-y-2">
+                    <label for="password" class="block text-sm font-medium text-craftmart-800">Password</label>
+                    <input id="password" name="password" type="password" required class="w-full px-4 py-3 border-2 border-craftmart-200 rounded-xl focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" placeholder="••••••••" />
+                </div>
+                <button type="submit" class="w-full bg-gradient-to-r from-craftmart-600 to-craftmart-700 text-white font-bold py-3 rounded-xl hover:from-craftmart-700 hover:to-craftmart-800">Log In</button>
+            </form>
+            <div id="errorMessage" class="hidden mt-4 p-3 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl"></div>
+            <p class="text-center text-sm text-craftmart-700 mt-6">No account? <a href="signup.html" class="font-semibold text-craftmart-800 underline">Apply as Seller</a></p>
+        </div>
+        <div class="text-center mt-8">
+            <p class="text-craftmart-600 text-sm">&copy; 2025 CraftMart. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('sellerLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.classList.add('hidden');
+            try {
+                const res = await fetch('api/login.php', { method: 'POST', body: JSON.stringify({ email, password }), headers: { 'Content-Type': 'application/json' } });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('sellerToken', data.token);
+                    localStorage.setItem('sellerUser', JSON.stringify(data.user));
+                    window.location.href = 'dashboard.html';
+                } else {
+                    errorDiv.textContent = data.message || 'Login failed';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorDiv.textContent = 'Network error. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+        if (localStorage.getItem('sellerToken')) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
+
+

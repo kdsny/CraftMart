@@ -13,11 +13,9 @@ const Footer: React.FC<Props> = ({ onBecomeSeller }) => {
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">CraftMart</h3>
             <p className="text-sm text-khaki-brown-200">Empowering local artisans and preserving traditional craftsmanship.</p>
-            {onBecomeSeller && (
-              <div className="mt-4">
-                <button onClick={onBecomeSeller} className="bg-white text-khaki-brown-900 text-sm font-semibold px-4 py-2 rounded-md hover:bg-khaki-brown-100">Become a Seller</button>
-              </div>
-            )}
+            <div className="mt-4">
+              <a href="seller/index.html" className="inline-block bg-white text-khaki-brown-900 text-sm font-semibold px-4 py-2 rounded-md hover:bg-khaki-brown-100">Become a Seller</a>
+            </div>
           </div>
           <div>
             <h3 className="text-sm font-semibold tracking-wider uppercase text-white mb-4">Shop</h3>

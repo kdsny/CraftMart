@@ -1,59 +1,72 @@
-# CraftMart Admin Dashboard
+# CraftMart
 
-## Setup Instructions
+A thesis e-commerce platform empowering local craftspeople. This repo contains:
+- Admin site (PHP + HTML)
+- Buyer SPA (Vite + React + TypeScript)
+- Seller site (standalone HTML pages; PHP APIs planned)
 
-### 1. Database Setup
-1. Open XAMPP and start Apache and MySQL services
-2. Open phpMyAdmin (http://localhost/phpmyadmin)
-3. Create a new database named `db_craftmart`
-4. Import the SQL file: `craftmart_database.sql`
+## Setup
 
-### 2. Admin Login Credentials
-- **Email**: admin@craftmart.com
-- **Password**: password (default password from the SQL file)
+### 1) Database
+1. Start Apache and MySQL in XAMPP
+2. Open `http://localhost/phpmyadmin`
+3. Create database `db_craftmart`
+4. Import `craftmart_database.sql`
 
-### 3. File Structure
+Notes:
+- `users` now includes KYC fields: `kyc_status` and `national_id_image`.
+- A default admin user is inserted with email `admin@craftmart.com` and password `password`.
+
+Optional: insert a demo seller (password is `password` using the same bcrypt hash as admin):
+```sql
+INSERT INTO users (email, password, first_name, last_name, phone, user_type, is_active, email_verified, kyc_status)
+VALUES ('seller@craftmart.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Demo', 'Seller', '+63 900 000 0000', 'seller', TRUE, TRUE, 'approved');
+```
+
+### 2) Buyer Frontend (React)
+1. In a terminal at project root: `npm install`
+2. Start dev server: `npm run dev`
+3. Open the shown local URL (typically `http://localhost:5173`) for the buyer UI.
+
+### 3) Admin Site (PHP)
+- Admin Login: `http://localhost/craftmart_projct/admin/index.html`
+- Admin Dashboard: `http://localhost/craftmart_projct/admin/dashboard.html`
+
+Default admin credentials:
+- Email: `admin@craftmart.com`
+- Password: `password`
+
+### 4) Seller Site
+- Seller Login Page: `http://localhost/craftmart_projct/seller/index.html`
+- “Become a Seller” button is visible in the site footer and links to the seller page.
+
+Planned/ongoing:
+- Seller signup page with KYC uploads (profile picture and national ID) and pending review status.
+- Admin review screen to approve/reject sellers and view uploaded ID image.
+
+## Features (current)
+- Admin authentication and dashboard shell
+- Buyer SPA with categories, products, seller profiles, cart/checkout pages (mock data)
+- Footer CTA linking to seller portal
+
+## Security Notes
+- Change default passwords on first run.
+- Do not store raw ID images in web-accessible paths in production; use protected storage and signed URLs.
+
+## Project Structure (excerpt)
 ```
 admin/
-├── index.html          # Admin login page
-├── dashboard.html      # Admin dashboard
-├── api/
-│   ├── login.php       # Authentication API
-│   └── dashboard.php   # Dashboard data API
-└── README.md           # This file
+  index.html
+  dashboard.html
+  api/
+    login.php
+seller/
+  index.html
+src (React root is project root with Vite):
+  App.tsx, components/, context/
 ```
 
-### 4. Access URLs
-- **Admin Login**: http://localhost/craftmart_projct/admin/
-- **Admin Dashboard**: http://localhost/craftmart_projct/admin/dashboard.html
-
-### 5. Features
-- **Authentication**: Secure admin login
-- **Dashboard**: Overview of system statistics
-- **User Management**: View and manage all users
-- **Product Management**: View and manage all products
-- **Order Management**: View and manage all orders
-- **Category Management**: Manage product categories
-- **System Settings**: Configure system parameters
-
-### 6. Security Notes
-- Change the default admin password after first login
-- The system uses PHP sessions for authentication
-- All API endpoints include basic security checks
-
-### 7. Database Schema
-The database includes tables for:
-- Users (admin, seller, buyer, rider)
-- Products and categories
-- Orders and order items
-- Messages and reviews
-- Delivery tracking
-- System settings and notifications
-
-### 8. Next Steps
-1. Set up the main CraftMart frontend
-2. Implement seller registration and product upload
-3. Add buyer registration and shopping features
-4. Implement rider registration and delivery tracking
-5. Add payment integration (GCash)
-6. Implement AR product previews
+## Next Steps
+- Implement seller signup (`seller/signup.html`) with file uploads (profile and national ID) and API to create `users` with `kyc_status='pending'` and `seller_profiles` row.
+- Add admin UI to review seller applications (view ID image) and approve/reject, updating `kyc_status` and `is_verified`.
+- Hook buyer SPA to real APIs for products, auth, and orders.

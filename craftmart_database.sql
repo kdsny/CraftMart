@@ -1,43 +1,43 @@
--- CraftMart Database Schema
--- E-commerce platform for local craftspeople
-
--- Create database (uncomment if needed)
--- CREATE DATABASE craftmart_db;
--- USE craftmart_db;
-
--- Users table (for all user types: admin, seller, buyer, rider)
-CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    phone VARCHAR(20),
-    profile_image VARCHAR(255),
-    user_type ENUM('admin', 'seller', 'buyer', 'rider') NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
-    email_verified BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
--- Seller profiles (extended info for craftspersons)
-CREATE TABLE seller_profiles (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    business_name VARCHAR(255) NOT NULL,
-    business_description TEXT,
-    business_address TEXT,
-    business_phone VARCHAR(20),
-    business_email VARCHAR(255),
-    profile_image VARCHAR(255),
-    cover_image VARCHAR(255),
-    social_media JSON, -- Store social media links as JSON
-    is_verified BOOLEAN DEFAULT FALSE,
-    rating DECIMAL(3,2) DEFAULT 0.00,
-    total_sales INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+*** Begin Patch
+*** Update File: craftmart_database.sql
+@@
+ CREATE TABLE users (
+     id INT PRIMARY KEY AUTO_INCREMENT,
+     email VARCHAR(255) UNIQUE NOT NULL,
+     password VARCHAR(255) NOT NULL,
+     first_name VARCHAR(100) NOT NULL,
+     last_name VARCHAR(100) NOT NULL,
+     phone VARCHAR(20),
+     profile_image VARCHAR(255),
+     user_type ENUM('admin', 'seller', 'buyer', 'rider') NOT NULL,
+     is_active BOOLEAN DEFAULT TRUE,
++    kyc_status ENUM('none','pending','approved','rejected') DEFAULT 'none',
++    national_id_image VARCHAR(255),
+     email_verified BOOLEAN DEFAULT FALSE,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+ );
+@@
+ CREATE TABLE seller_profiles (
+     id INT PRIMARY KEY AUTO_INCREMENT,
+     user_id INT NOT NULL,
+-    business_name VARCHAR(255) NOT NULL,
++    business_name VARCHAR(255) NOT NULL,
+     business_description TEXT,
+     business_address TEXT,
+     business_phone VARCHAR(20),
+     business_email VARCHAR(255),
+     profile_image VARCHAR(255),
+     cover_image VARCHAR(255),
+     social_media JSON, -- Store social media links as JSON
+     is_verified BOOLEAN DEFAULT FALSE,
+     rating DECIMAL(3,2) DEFAULT 0.00,
+     total_sales INT DEFAULT 0,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+ );
+*** End Patchted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
