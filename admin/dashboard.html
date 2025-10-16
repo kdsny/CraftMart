@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraftMart Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'craftmart': {
+                            '50': '#fef7f3',
+                            '100': '#fdeee6',
+                            '200': '#fbd9c7',
+                            '300': '#f8c4a8',
+                            '400': '#f4a47a',
+                            '500': '#ad6234',
+                            '600': '#9c572e',
+                            '700': '#8b4c28',
+                            '800': '#7a4122',
+                            '900': '#69361c',
+                            '950': '#582b16',
+                        },
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-craftmart-50">
+    <div id="toast" class="hidden fixed top-4 right-4 bg-white border border-craftmart-200 text-craftmart-900 px-4 py-3 rounded-lg shadow-lg z-50"></div>
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out" id="sidebar">
+        <div class="flex items-center justify-start h-16 bg-white border-b border-craftmart-200 px-4">
+            <div class="flex items-center space-x-3">
+                <img id="sidebarProfileImage" src="" alt="Profile" class="w-10 h-10 rounded-full object-cover hidden">
+                <div id="sidebarProfileFallback" class="w-10 h-10 bg-craftmart-600 rounded-full flex items-center justify-center">
+                    <span id="sidebarProfileInitial" class="text-white font-bold">A</span>
+                </div>
+                <div class="flex flex-col">
+                    <span id="sidebarProfileName" class="text-craftmart-800 font-semibold leading-tight">Admin User</span>
+                    <span class="text-xs text-craftmart-600 leading-tight">Administrator</span>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="mt-8">
+            <div class="px-4 space-y-2">
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-600 bg-craftmart-100 rounded-lg" data-section="dashboard">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
+                    </svg>
+                    Dashboard
+                </a>
+                
+                <a href="#" onclick="loadUsersSection()" class="flex items-center px-4 py-3 text-craftmart-700 hover:bg-craftmart-50 rounded-lg transition-colors" data-section="users">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                    </svg>
+                    Users
+                </a>
+                
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-700 hover:bg-craftmart-50 rounded-lg transition-colors" data-section="products">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    Products
+                </a>
+                
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-700 hover:bg-craftmart-50 rounded-lg transition-colors" data-section="orders">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    Orders
+                </a>
+                
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-700 hover:bg-craftmart-50 rounded-lg transition-colors" data-section="categories">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                    </svg>
+                    Categories
+                </a>
+                
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-700 hover:bg-craftmart-50 rounded-lg transition-colors" data-section="settings">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Settings
+                </a>
+                
+                <!-- Logout Button -->
+                <button onclick="logout()" class="flex items-center px-4 py-3 text-red-600 hover:text-red-800 hover:bg-red-50 font-medium transition-colors duration-200 rounded-lg w-full">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-sm border-b border-craftmart-100">
+            <div class="grid grid-cols-3 items-center px-6 py-4">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="lg:hidden text-craftmart-600 hover:text-craftmart-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-2xl font-bold text-craftmart-900 ml-4" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="flex items-center justify-center">
+                    <img src="../logo/CraftMart_logo.png" alt="CraftMart Logo" class="h-8 w-auto">
+                </div>
+                
+                <div class="flex items-center space-x-4 justify-end">
+                    <!-- Notifications -->
+                    <button class="relative text-craftmart-600 hover:text-craftmart-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span class="absolute -top-1 -right-1 bg-craftmart-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                    </button>
+                    
+                    <!-- Admin Profile -->
+                    <div class="flex items-center space-x-3">
+                        <button onclick="loadProfileSection()" class="flex items-center space-x-3 hover:bg-craftmart-50 p-2 rounded-lg transition-colors">
+                            <img id="topbarProfileImage" src="" alt="Profile" class="w-8 h-8 rounded-full object-cover hidden">
+                            <div id="topbarProfileFallback" class="w-8 h-8 bg-craftmart-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-bold text-sm" id="adminInitial">A</span>
+                            </div>
+                            <div class="hidden md:block">
+                                <p class="text-sm font-medium text-craftmart-900" id="adminName">Admin User</p>
+                                <p class="text-xs text-craftmart-600">Administrator</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-6">
+            <!-- Dashboard Section -->
+            <div id="dashboard-section">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-craftmart-600">Total Users</p>
+                                <p class="text-3xl font-bold text-craftmart-900" id="totalUsers">1,234</p>
+                            </div>
+                            <div class="w-12 h-12 bg-craftmart-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-green-600 mt-2">+12% from last month</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-craftmart-600">Total Products</p>
+                                <p class="text-3xl font-bold text-craftmart-900" id="totalProducts">567</p>
+                            </div>
+                            <div class="w-12 h-12 bg-craftmart-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-green-600 mt-2">+8% from last month</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-craftmart-600">Total Orders</p>
+                                <p class="text-3xl font-bold text-craftmart-900" id="totalOrders">89</p>
+                            </div>
+                            <div class="w-12 h-12 bg-craftmart-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-green-600 mt-2">+15% from last month</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-craftmart-600">Revenue</p>
+                                <p class="text-3xl font-bold text-craftmart-900" id="totalRevenue">₱45,678</p>
+                            </div>
+                            <div class="w-12 h-12 bg-craftmart-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-green-600 mt-2">+23% from last month</p>
+                    </div>
+                </div>
+
+                <!-- Analytics Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Sales Overview -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900 mb-4">Sales Overview</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-craftmart-50 rounded-lg">
+                                <span class="text-craftmart-700">This Month</span>
+                                <span class="font-bold text-craftmart-900">₱12,450</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-craftmart-50 rounded-lg">
+                                <span class="text-craftmart-700">Last Month</span>
+                                <span class="font-bold text-craftmart-900">₱10,230</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-craftmart-50 rounded-lg">
+                                <span class="text-craftmart-700">Growth</span>
+                                <span class="font-bold text-green-600">+21.7%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- User Growth -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900 mb-4">User Growth</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-craftmart-50 rounded-lg">
+                                <span class="text-craftmart-700">New Users (30 days)</span>
+                                <span class="font-bold text-craftmart-900">156</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-craftmart-50 rounded-lg">
+                                <span class="text-craftmart-700">Active Sellers</span>
+                                <span class="font-bold text-craftmart-900">23</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-craftmart-50 rounded-lg">
+                                <span class="text-craftmart-700">Active Buyers</span>
+                                <span class="font-bold text-craftmart-900">89</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900">Recent Activity</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4" id="recentActivity">
+                            <!-- Activity items will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other sections will be loaded dynamically -->
+            <div id="dynamic-content" class="hidden">
+                <!-- Content will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Check authentication
+        if (!localStorage.getItem('adminToken')) {
+            window.location.href = 'index.html';
+        }
+
+        // Load admin info
+        const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+        document.getElementById('adminName').textContent = adminUser.first_name + ' ' + adminUser.last_name;
+
+        // Sidebar toggle for mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Navigation
+        document.querySelectorAll('[data-section]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+                loadSection(section);
+                
+                // Update active state
+                document.querySelectorAll('[data-section]').forEach(l => l.classList.remove('bg-craftmart-100', 'text-craftmart-600'));
+                document.querySelectorAll('[data-section]').forEach(l => l.classList.add('text-craftmart-700', 'hover:bg-craftmart-50'));
+                this.classList.remove('text-craftmart-700', 'hover:bg-craftmart-50');
+                this.classList.add('bg-craftmart-100', 'text-craftmart-600');
+            });
+        });
+
+        function loadSection(section) {
+            const pageTitle = document.getElementById('pageTitle');
+            const dashboardSection = document.getElementById('dashboard-section');
+            const dynamicContent = document.getElementById('dynamic-content');
+            
+            if (section === 'dashboard') {
+                dashboardSection.classList.remove('hidden');
+                dynamicContent.classList.add('hidden');
+                pageTitle.textContent = 'Dashboard';
+            } else {
+                dashboardSection.classList.add('hidden');
+                dynamicContent.classList.remove('hidden');
+                
+                switch(section) {
+                    case 'users':
+                        pageTitle.textContent = 'Users Management';
+                        loadUsersSection();
+                        break;
+                    case 'products':
+                        pageTitle.textContent = 'Products Management';
+                        loadProductsSection();
+                        break;
+                    case 'orders':
+                        pageTitle.textContent = 'Orders Management';
+                        loadOrdersSection();
+                        break;
+                    case 'categories':
+                        pageTitle.textContent = 'Categories Management';
+                        loadCategoriesSection();
+                        break;
+                    case 'settings':
+                        pageTitle.textContent = 'System Settings';
+                        loadSettingsSection();
+                        break;
+                }
+            }
+        }
+
+        function loadUsersSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-craftmart-900">All Users</h3>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-craftmart-100">
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Name</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Email</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Type</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Status</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTableBody">
+                                    <!-- Users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadProductsSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-craftmart-900">All Products</h3>
+                            <button class="bg-craftmart-600 text-white px-4 py-2 rounded-lg hover:bg-craftmart-700 transition-colors">
+                                Add Product
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-craftmart-100">
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Product</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Seller</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Price</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Stock</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Status</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTableBody">
+                                    <!-- Products will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadOrdersSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900">All Orders</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-craftmart-100">
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Order #</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Customer</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Amount</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Status</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Date</th>
+                                        <th class="text-left py-3 px-4 font-medium text-craftmart-700">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTableBody">
+                                    <!-- Orders will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadCategoriesSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-craftmart-900">Categories</h3>
+                            <button class="bg-craftmart-600 text-white px-4 py-2 rounded-lg hover:bg-craftmart-700 transition-colors">
+                                Add Category
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="categoriesGrid">
+                            <!-- Categories will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadSettingsSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900">System Settings</h3>
+                    </div>
+                    <div class="p-6">
+                        <form class="space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">Site Name</label>
+                                    <input type="text" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" value="CraftMart">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">Contact Email</label>
+                                    <input type="email" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" value="support@craftmart.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">Shipping Fee</label>
+                                    <input type="number" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" value="50.00">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">Tax Rate (%)</label>
+                                    <input type="number" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" value="12">
+                                </div>
+                            </div>
+                            <button type="submit" class="bg-craftmart-600 text-white px-6 py-3 rounded-lg hover:bg-craftmart-700 transition-colors">
+                                Save Settings
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function loadProfileSection() {
+            console.log('Loading profile section...');
+            document.getElementById('pageTitle').textContent = 'Admin Profile';
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('dynamic-content').classList.remove('hidden');
+            
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900">Admin Profile</h3>
+                    </div>
+                    <div class="p-6">
+                        <form id="profileForm" class="space-y-6">
+                            <!-- Profile Picture -->
+                            <div class="flex items-center space-x-6">
+                                <div class="relative">
+                                    <img id="profileImage" src="https://via.placeholder.com/100x100/ad6234/ffffff?text=A" alt="Profile" class="w-24 h-24 rounded-full object-cover border-4 border-craftmart-200">
+                                    <button type="button" onclick="document.getElementById('profileImageInput').click()" class="absolute bottom-0 right-0 bg-craftmart-600 text-white rounded-full p-2 hover:bg-craftmart-700 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </button>
+                                    <input type="file" id="profileImageInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-medium text-craftmart-900">Profile Picture</h4>
+                                    <p class="text-sm text-craftmart-600">Click the camera icon to change your profile picture</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">First Name</label>
+                                    <input type="text" id="firstName" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" value="Admin">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">Last Name</label>
+                                    <input type="text" id="lastName" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" value="User">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">Email</label>
+                                    <input type="email" id="email" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" value="admin@craftmart.com" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">Phone</label>
+                                    <input type="tel" id="phone" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" placeholder="Enter phone number">
+                                </div>
+                            </div>
+                            
+                            <div class="flex space-x-4">
+                                <button type="submit" class="bg-craftmart-600 text-white px-6 py-3 rounded-lg hover:bg-craftmart-700 transition-colors">
+                                    Save Changes
+                                </button>
+                                <button type="button" onclick="loadDashboard()" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            // Load current admin data
+            const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+            document.getElementById('firstName').value = adminUser.first_name || 'Admin';
+            document.getElementById('lastName').value = adminUser.last_name || 'User';
+            document.getElementById('email').value = adminUser.email || 'admin@craftmart.com';
+            document.getElementById('phone').value = adminUser.phone || '';
+            
+            // Update profile image if available
+            if (adminUser.profile_image) {
+                document.getElementById('profileImage').src = adminUser.profile_image;
+            }
+            
+            // Handle form submission
+            document.getElementById('profileForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData();
+                formData.append('first_name', document.getElementById('firstName').value);
+                formData.append('last_name', document.getElementById('lastName').value);
+                formData.append('phone', document.getElementById('phone').value);
+                
+                if (document.getElementById('profileImageInput').files[0]) {
+                    formData.append('profile_image', document.getElementById('profileImageInput').files[0]);
+                }
+                
+                try {
+                    const response = await fetch('api/update-profile.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Update local storage
+                        const updatedUser = {...adminUser, ...data.user};
+                        localStorage.setItem('adminUser', JSON.stringify(updatedUser));
+                        
+                        // Update UI
+                        document.getElementById('adminName').textContent = updatedUser.first_name + ' ' + updatedUser.last_name;
+                        document.getElementById('adminInitial').textContent = updatedUser.first_name.charAt(0);
+                        hydrateProfileUI();
+                        
+                        showToast('Profile updated successfully');
+                        loadDashboard();
+                    } else {
+                        showToast('Error updating profile: ' + (data.message || 'Please try again'));
+                    }
+                } catch (error) {
+                    showToast('Error updating profile. Please try again.');
+                }
+            });
+        }
+        
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function loadDashboard() {
+            document.getElementById('pageTitle').textContent = 'Dashboard';
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('dynamic-content').classList.add('hidden');
+        }
+
+        async function loadUsersSection() {
+            document.getElementById('pageTitle').textContent = 'Users';
+            document.getElementById('dashboard-section').classList.add('hidden');
+            document.getElementById('dynamic-content').classList.remove('hidden');
+
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100 flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-craftmart-900">Manage Users</h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="usersNotice" class="mb-4 hidden"></div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-craftmart-100" id="usersTable">
+                                <thead class="bg-craftmart-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-craftmart-600 uppercase tracking-wider">User</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-craftmart-600 uppercase tracking-wider">Email</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-craftmart-600 uppercase tracking-wider">Phone</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-craftmart-600 uppercase tracking-wider">Type</th>
+                                        <th class="px-4 py-3 text-left text-xs font-medium text-craftmart-600 uppercase tracking-wider">Created</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-craftmart-100" id="usersTbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Detail Modal -->
+                <div id="userDetailModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center p-4">
+                    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl">
+                        <div class="p-6 border-b border-craftmart-100 flex items-center justify-between">
+                            <h4 class="text-xl font-semibold text-craftmart-900">User Details</h4>
+                            <button onclick="closeUserDetailModal()" class="text-craftmart-600 hover:text-craftmart-800">✕</button>
+                        </div>
+                        <div class="p-6 space-y-6">
+                            <div id="userDetailBody" class="space-y-4"></div>
+                            <div class="border-t border-craftmart-100 pt-4">
+                                <div id="userDetailActions"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Edit User Modal -->
+                <div id="editUserModal" class="fixed inset-0 bg-black/40 hidden items-center justify-center p-4">
+                    <div class="bg-white rounded-xl shadow-xl w-full max-w-sm">
+                        <div class="p-6 border-b border-craftmart-100 flex items-center justify-between">
+                            <h4 class="text-lg font-semibold text-craftmart-900">Edit User</h4>
+                            <button onclick="closeEditUserModal()" class="text-craftmart-600 hover:text-craftmart-800">✕</button>
+                        </div>
+                        <div class="p-6">
+                            <form id="editUserForm" class="space-y-4" enctype="multipart/form-data">
+                                <!-- Avatar Picker (Edit) -->
+                                <div class="flex flex-col items-center">
+                                    <div class="relative">
+                                        <img id="editProfilePreview" src="" alt="Preview" class="w-28 h-28 rounded-full object-cover border border-craftmart-200 hidden">
+                                        <div id="editProfileFallback" class="w-28 h-28 rounded-full bg-craftmart-100 border border-craftmart-200 flex items-center justify-center text-craftmart-400 text-3xl">👤</div>
+                                        <label for="edit_profile_image" class="absolute -right-1 -bottom-1 bg-craftmart-600 text-white w-8 h-8 rounded-full flex items-center justify-center shadow hover:bg-craftmart-700 cursor-pointer">+</label>
+                                    </div>
+                                    <input type="file" name="profile_image" accept="image/*" id="edit_profile_image" class="hidden">
+                                </div>
+                                <input type="hidden" name="id" id="edit_user_id">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-craftmart-700 mb-2">First Name</label>
+                                        <input type="text" name="first_name" id="edit_first_name" required class="w-full px-3 py-2 text-sm border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-craftmart-700 mb-2">Last Name</label>
+                                        <input type="text" name="last_name" id="edit_last_name" required class="w-full px-3 py-2 text-sm border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">Email</label>
+                                    <input type="email" name="email" id="edit_email" required class="w-full px-3 py-2 text-sm border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">Phone</label>
+                                    <input type="tel" name="phone" id="edit_phone" class="w-full px-3 py-2 text-sm border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-craftmart-700 mb-2">User Type</label>
+                                    <select name="user_type" id="edit_user_type" required class="w-full px-3 py-2 text-sm border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500">
+                                        <option value="buyer">Buyer</option>
+                                        <option value="seller">Seller</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="flex justify-end space-x-3 pt-2">
+                                    <button type="button" onclick="closeEditUserModal()" class="px-4 py-2 rounded-lg border border-craftmart-200 text-craftmart-700">Cancel</button>
+                                    <button type="submit" class="px-4 py-2 rounded-lg bg-craftmart-600 text-white hover:bg-craftmart-700">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Load users list
+            await loadUsersList();
+
+            // No add-user actions; creation is disabled by design
+        }
+
+        // No add-user modal handlers; feature removed
+
+        let usersCache = [];
+        async function loadUsersList() {
+            try {
+                const res = await fetch('api/users.php');
+                const data = await res.json();
+                if (data.success) {
+                    usersCache = (data.users || []).filter(u => u.user_type !== 'admin');
+                    const tbody = document.getElementById('usersTbody');
+                    tbody.innerHTML = usersCache.map(u => `
+                        <tr class=\"hover:bg-craftmart-50 cursor-pointer\" onclick=\"openUserDetailModal(${u.id})\">
+                            <td class="px-4 py-3 text-sm text-craftmart-900">
+                                <span class="inline-flex items-center space-x-3">
+                                    ${u.profile_image ? `<img src="${u.profile_image}" class="w-8 h-8 rounded-full object-cover">` : `<span class=\"w-8 h-8 rounded-full bg-craftmart-600 text-white flex items-center justify-center text-xs\">${(u.first_name||'A').charAt(0)}</span>`}
+                                    <span>${u.first_name} ${u.last_name}</span>
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-craftmart-700">${u.email}</td>
+                            <td class="px-4 py-3 text-sm text-craftmart-700">${u.phone || ''}</td>
+                            <td class="px-4 py-3 text-sm"><span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${u.user_type === 'seller' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}">${u.user_type}${(u.user_type==='seller' && (u.is_verified===null || Number(u.is_verified)===0)) ? ' • pending' : ''}</span></td>
+                            <td class="px-4 py-3 text-sm text-craftmart-600">${u.created_at}</td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                // ignore for now
+            }
+        }
+
+        // User details modal logic and actions
+        function openUserDetailModal(userId) {
+            const u = usersCache.find(x => Number(x.id) === Number(userId));
+            if (!u) return;
+            const modal = document.getElementById('userDetailModal');
+            const body = document.getElementById('userDetailBody');
+            const actions = document.getElementById('userDetailActions');
+            const isSeller = u.user_type === 'seller';
+            const isPendingSeller = isSeller && (u.is_verified === null || Number(u.is_verified) === 0);
+            const isActive = Number(u.is_active) === 1;
+
+            body.innerHTML = `
+                <div class=\"flex items-center space-x-4\">
+                    ${u.profile_image ? `<img src=\"${u.profile_image}\" class=\"w-16 h-16 rounded-full object-cover ring-2 ring-craftmart-100\">` : `<span class=\"w-16 h-16 rounded-full bg-craftmart-600 text-white flex items-center justify-center text-xl ring-2 ring-craftmart-100\">${(u.first_name||'A').charAt(0)}</span>`}
+                    <div>
+                        <div class=\"text-craftmart-900 text-xl font-semibold\">${u.first_name} ${u.last_name}</div>
+                        <div class=\"mt-1 inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${u.user_type === 'seller' ? 'bg-purple-100 text-purple-800' : u.user_type === 'buyer' ? 'bg-green-100 text-green-800' : 'bg-craftmart-100 text-craftmart-800'}\">${u.user_type}${isPendingSeller ? ' • pending approval' : ''}</div>
+                    </div>
+                </div>
+                <div class=\"grid grid-cols-1 md:grid-cols-2 gap-4 mt-2\">
+                    <div class=\"p-3 rounded-lg bg-craftmart-50\">
+                        <div class=\"text-xs text-craftmart-600\">Email</div>
+                        <div class=\"text-sm text-craftmart-900 break-all\">${u.email}</div>
+                    </div>
+                    <div class=\"p-3 rounded-lg bg-craftmart-50\">
+                        <div class=\"text-xs text-craftmart-600\">Phone</div>
+                        <div class=\"text-sm text-craftmart-900\">${u.phone || ''}</div>
+                    </div>
+                    <div class=\"p-3 rounded-lg bg-craftmart-50\">
+                        <div class=\"text-xs text-craftmart-600\">Created</div>
+                        <div class=\"text-sm text-craftmart-900\">${u.created_at}</div>
+                    </div>
+                    <div class=\"p-3 rounded-lg bg-craftmart-50\">
+                        <div class=\"text-xs text-craftmart-600\">Status</div>
+                        <div class=\"text-sm text-craftmart-900\">${isActive ? 'Active' : 'Suspended'}</div>
+                    </div>
+                </div>
+            `;
+
+            actions.innerHTML = `
+                <div class=\"flex flex-wrap gap-2\">
+                    <button class=\"px-4 py-2 rounded-lg border border-craftmart-200 text-craftmart-700 hover:bg-craftmart-50\" onclick=\"openEditUserModal(${u.id})\">Update</button>
+                    <button class=\"px-4 py-2 rounded-lg ${isActive ? 'bg-yellow-500 text-white hover:bg-yellow-600' : 'bg-green-600 text-white hover:bg-green-700'}\" onclick=\"performUserAction(${u.id}, '${isActive ? 'suspend' : 'activate'}')\">${isActive ? 'Suspend' : 'Activate'}</button>
+                    <button class=\"px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700\" onclick=\"confirmDeleteUser(${u.id})\">Delete</button>
+                    ${isPendingSeller ? `<button class=\\\"px-4 py-2 rounded-lg bg-craftmart-600 text-white hover:bg-craftmart-700\\\" onclick=\\\"performUserAction(${u.id}, 'approve_seller')\\\">Approve Seller</button>` : ''}
+                    ${isPendingSeller ? `<button class=\\\"px-4 py-2 rounded-lg bg-gray-100 text-craftmart-800 hover:bg-gray-200\\\" onclick=\\\"performUserAction(${u.id}, 'decline_seller')\\\">Decline</button>` : ''}
+                </div>
+            `;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function closeUserDetailModal() {
+            const modal = document.getElementById('userDetailModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+        async function performUserAction(userId, action) {
+            try {
+                const res = await fetch('api/user-update-status.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, action })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    closeUserDetailModal();
+                    await loadUsersList();
+                    await loadDashboardData();
+                    showToast('Action completed');
+                } else {
+                    showToast(data.message || 'Failed to perform action');
+                }
+            } catch (e) {
+                showToast('Network error. Please try again.');
+            }
+        }
+        function confirmDeleteUser(userId) {
+            if (confirm('Delete this user? This cannot be undone.')) {
+                performUserAction(userId, 'delete');
+            }
+        }
+
+        function openEditUserModal(userId) {
+            const u = usersCache.find(x => Number(x.id) === Number(userId));
+            if (!u) return;
+            document.getElementById('edit_user_id').value = u.id;
+            document.getElementById('edit_first_name').value = u.first_name || '';
+            document.getElementById('edit_last_name').value = u.last_name || '';
+            document.getElementById('edit_email').value = u.email || '';
+            document.getElementById('edit_phone').value = u.phone || '';
+            document.getElementById('edit_user_type').value = u.user_type || 'buyer';
+            const editPreview = document.getElementById('editProfilePreview');
+            const editFallback = document.getElementById('editProfileFallback');
+            if (editPreview) {
+                if (u.profile_image) {
+                    editPreview.src = u.profile_image;
+                    editPreview.classList.remove('hidden');
+                    if (editFallback) editFallback.classList.add('hidden');
+                } else {
+                    editPreview.classList.add('hidden');
+                    if (editFallback) editFallback.classList.remove('hidden');
+                }
+            }
+            const modal = document.getElementById('editUserModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function closeEditUserModal() {
+            const modal = document.getElementById('editUserModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Edit form submit
+        document.addEventListener('submit', async function(e) {
+            const form = e.target;
+            if (form && form.id === 'editUserForm') {
+                e.preventDefault();
+                const formData = new FormData(form);
+                try {
+                    const res = await fetch('api/update-user.php', { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.success) {
+                        closeEditUserModal();
+                        await loadUsersList();
+                        await loadDashboardData();
+                        showToast('User updated successfully');
+                    } else {
+                        showToast(data.message || 'Failed to update user');
+                    }
+                } catch (err) {
+                    showToast('Network error. Please try again.');
+                }
+            }
+        });
+
+        // Edit image preview handler
+        document.addEventListener('change', function(e) {
+            const target = e.target;
+            if (target && target.id === 'edit_profile_image') {
+                const input = target;
+                const file = input.files && input.files[0];
+                const preview = document.getElementById('editProfilePreview');
+                const fallback = document.getElementById('editProfileFallback');
+                if (file && preview) {
+                    const url = URL.createObjectURL(file);
+                    preview.src = url;
+                    preview.classList.remove('hidden');
+                    if (fallback) fallback.classList.add('hidden');
+                }
+            }
+        });
+
+        const editTriggerBtn = document.getElementById('editProfileTrigger');
+        if (editTriggerBtn) {
+            editTriggerBtn.addEventListener('click', function() {
+                const input = document.getElementById('edit_profile_image');
+                input && input.click();
+            });
+        }
+
+        function showToast(message, type = 'info') {
+            const notice = document.getElementById('usersNotice');
+            if (!notice) return;
+            const styles = type === 'success' ? 'bg-green-50 text-green-800 border border-green-200'
+                         : type === 'error' ? 'bg-red-50 text-red-800 border border-red-200'
+                         : 'bg-craftmart-50 text-craftmart-800 border border-craftmart-200';
+            notice.className = `mb-4 px-4 py-3 rounded-lg ${styles}`;
+            notice.textContent = message;
+            notice.classList.remove('hidden');
+            clearTimeout(window.__usersNoticeTimer);
+            window.__usersNoticeTimer = setTimeout(() => {
+                notice.classList.add('hidden');
+            }, 3000);
+        }
+
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            window.location.href = 'index.html';
+        }
+
+        // Initialize dashboard data
+        function initDashboard() {
+            // Load dashboard data from API
+            loadDashboardData();
+        }
+        
+        async function loadDashboardData() {
+            try {
+                const response = await fetch('api/dashboard.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update stats
+                    document.getElementById('totalUsers').textContent = data.data.totalUsers;
+                    document.getElementById('totalProducts').textContent = data.data.totalProducts;
+                    document.getElementById('totalOrders').textContent = data.data.totalOrders;
+                    document.getElementById('totalRevenue').textContent = '₱' + data.data.totalRevenue;
+                }
+            } catch (error) {
+                console.log('Dashboard data loaded with default values');
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize admin user data if not exists
+            if (!localStorage.getItem('adminUser')) {
+                const defaultAdmin = {
+                    id: 1,
+                    email: 'admin@craftmart.com',
+                    first_name: 'Admin',
+                    last_name: 'User',
+                    phone: '',
+                    profile_image: null
+                };
+                localStorage.setItem('adminUser', JSON.stringify(defaultAdmin));
+            }
+            
+            initDashboard();
+            loadRecentActivity();
+
+            // Hydrate profile UI from stored data
+            hydrateProfileUI();
+        });
+
+        function hydrateProfileUI() {
+            const adminUser = JSON.parse(localStorage.getItem('adminUser') || '{}');
+            const fullName = ((adminUser.first_name || 'Admin') + ' ' + (adminUser.last_name || 'User')).trim();
+            const initial = (adminUser.first_name || 'A').charAt(0).toUpperCase();
+
+            // Topbar
+            const topImg = document.getElementById('topbarProfileImage');
+            const topFallback = document.getElementById('topbarProfileFallback');
+            if (adminUser.profile_image) {
+                topImg.src = adminUser.profile_image;
+                topImg.classList.remove('hidden');
+                topFallback.classList.add('hidden');
+            } else {
+                topImg.classList.add('hidden');
+                topFallback.classList.remove('hidden');
+            }
+            const adminNameEl = document.getElementById('adminName');
+            if (adminNameEl) adminNameEl.textContent = fullName;
+            const adminInitialEl = document.getElementById('adminInitial');
+            if (adminInitialEl) adminInitialEl.textContent = initial;
+
+            // Sidebar header
+            const sideImg = document.getElementById('sidebarProfileImage');
+            const sideFallback = document.getElementById('sidebarProfileFallback');
+            const sideInitial = document.getElementById('sidebarProfileInitial');
+            const sideName = document.getElementById('sidebarProfileName');
+            if (adminUser.profile_image) {
+                sideImg.src = adminUser.profile_image;
+                sideImg.classList.remove('hidden');
+                sideFallback.classList.add('hidden');
+            } else {
+                sideImg.classList.add('hidden');
+                sideFallback.classList.remove('hidden');
+            }
+            if (sideInitial) sideInitial.textContent = initial;
+            if (sideName) sideName.textContent = fullName;
+        }
+
+        function loadRecentActivity() {
+            const activities = [
+                { type: 'order', message: 'New order #1234 from John Doe', time: '2 minutes ago' },
+                { type: 'user', message: 'New seller registration: Maria Garcia', time: '15 minutes ago' },
+                { type: 'product', message: 'Product "Handwoven Basket" approved', time: '1 hour ago' },
+                { type: 'order', message: 'Order #1233 delivered successfully', time: '2 hours ago' }
+            ];
+
+            const container = document.getElementById('recentActivity');
+            container.innerHTML = activities.map(activity => `
+                <div class="flex items-center space-x-4 p-3 bg-craftmart-50 rounded-lg">
+                    <div class="w-2 h-2 bg-craftmart-600 rounded-full"></div>
+                    <div class="flex-1">
+                        <p class="text-sm text-craftmart-900">${activity.message}</p>
+                        <p class="text-xs text-craftmart-600">${activity.time}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
