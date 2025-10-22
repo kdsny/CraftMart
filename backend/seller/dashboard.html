@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraftMart Seller Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-[#f8f5f1]">
+    <header class="bg-craftmart-700 text-white px-6 py-4 flex items-center justify-between">
+        <h1 class="font-bold">Seller Dashboard</h1>
+        <button id="logoutBtn" class="bg-white/15 hover:bg-white/25 px-3 py-1 rounded">Logout</button>
+    </header>
+    <main class="max-w-6xl mx-auto p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl shadow p-6">
+                <h3 class="font-semibold mb-2">Status</h3>
+                <p id="kycStatus" class="text-sm text-gray-700"></p>
+            </div>
+            <div class="bg-white rounded-xl shadow p-6 md:col-span-2">
+                <h3 class="font-semibold mb-2">Welcome</h3>
+                <p class="text-sm text-gray-700">This is a starter dashboard. Product management and orders will be added next.</p>
+            </div>
+        </div>
+    </main>
+    <script>
+        const user = JSON.parse(localStorage.getItem('sellerUser') || 'null');
+        const token = localStorage.getItem('sellerToken');
+        if (!token) { window.location.href = 'index.html'; }
+        document.getElementById('kycStatus').textContent = user?.kyc_status ? ('KYC Status: ' + user.kyc_status) : 'KYC Status: pending';
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('sellerToken');
+            localStorage.removeItem('sellerUser');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
+
+

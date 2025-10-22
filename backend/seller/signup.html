@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraftMart Seller - Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { 'craftmart': { '50': '#fef7f3','100': '#fdeee6','200': '#fbd9c7','300': '#f8c4a8','400': '#f4a47a','500': '#ad6234','600': '#9c572e','700': '#8b4c28','800': '#7a4122','900': '#69361c','950': '#582b16' } } } } }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-craftmart-50 via-craftmart-100 to-craftmart-200 flex items-center justify-center p-4">
+    <div class="relative z-10 w-full max-w-2xl">
+        <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-8">
+            <div class="text-center mb-6">
+                <img src="../logo/CraftMart_logo.png" alt="CraftMart Logo" class="h-14 w-auto mx-auto">
+                <h2 class="text-2xl font-bold text-craftmart-900 mt-3">Apply as a Seller</h2>
+                <p class="text-craftmart-600">Provide your details and uploads for verification</p>
+            </div>
+            <form id="sellerSignupForm" class="grid grid-cols-1 md:grid-cols-2 gap-4" enctype="multipart/form-data">
+                <div>
+                    <label class="block text-sm font-medium text-craftmart-800">First Name</label>
+                    <input name="first_name" required class="mt-1 w-full px-3 py-2 border-2 border-craftmart-200 rounded-xl focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-craftmart-800">Last Name</label>
+                    <input name="last_name" required class="mt-1 w-full px-3 py-2 border-2 border-craftmart-200 rounded-xl focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" />
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-craftmart-800">Email</label>
+                    <input name="email" type="email" required class="mt-1 w-full px-3 py-2 border-2 border-craftmart-200 rounded-xl focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-craftmart-800">Phone</label>
+                    <input name="phone" required class="mt-1 w-full px-3 py-2 border-2 border-craftmart-200 rounded-xl" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-craftmart-800">Password</label>
+                    <input name="password" type="password" required class="mt-1 w-full px-3 py-2 border-2 border-craftmart-200 rounded-xl" />
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-craftmart-800">Address</label>
+                    <input name="address" class="mt-1 w-full px-3 py-2 border-2 border-craftmart-200 rounded-xl" />
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-craftmart-800">Business Name</label>
+                    <input name="business_name" required class="mt-1 w-full px-3 py-2 border-2 border-craftmart-200 rounded-xl" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-craftmart-800">Profile Picture</label>
+                    <input name="profile_image" type="file" accept="image/*" required class="mt-1 w-full" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-craftmart-800">National ID Image</label>
+                    <input name="national_id_image" type="file" accept="image/*" required class="mt-1 w-full" />
+                </div>
+                <div class="md:col-span-2 mt-2">
+                    <button type="submit" class="w-full bg-gradient-to-r from-craftmart-600 to-craftmart-700 text-white font-bold py-3 rounded-xl hover:from-craftmart-700 hover:to-craftmart-800">Submit Application</button>
+                </div>
+            </form>
+            <div id="resultMessage" class="hidden mt-4 p-3 rounded-xl"></div>
+            <p class="text-center text-sm text-craftmart-700 mt-4">Already have an account? <a href="index.html" class="font-semibold text-craftmart-800 underline">Log in</a></p>
+        </div>
+        <div class="text-center mt-6">
+            <p class="text-craftmart-600 text-sm">&copy; 2025 CraftMart. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('sellerSignupForm');
+        const result = document.getElementById('resultMessage');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            result.classList.add('hidden');
+            const formData = new FormData(form);
+            try {
+                const res = await fetch('api/signup.php', { method: 'POST', body: formData });
+                let data;
+                let ok = false;
+                try {
+                    data = await res.json();
+                    ok = !!data.success;
+                } catch (parseErr) {
+                    const text = await res.text();
+                    data = { success: false, message: text || 'Server returned a non-JSON response.' };
+                }
+                result.textContent = (data && data.message) ? data.message : (ok ? 'Application submitted' : 'Submission failed');
+                result.className = ok ? 'mt-4 p-3 rounded-xl bg-green-50 border-2 border-green-200 text-green-700' : 'mt-4 p-3 rounded-xl bg-red-50 border-2 border-red-200 text-red-700';
+                result.classList.remove('hidden');
+                if (ok) { form.reset(); }
+            } catch (err) {
+                result.textContent = 'Network error. Please try again.';
+                result.className = 'mt-4 p-3 rounded-xl bg-red-50 border-2 border-red-200 text-red-700';
+                result.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
+
+

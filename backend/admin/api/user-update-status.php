@@ -22,6 +22,7 @@ try {
 $input = json_decode(file_get_contents('php://input'), true) ?: [];
 $action = $input['action'] ?? '';
 $userId = intval($input['user_id'] ?? 0);
+$reason = trim($input['reason'] ?? '');
 
 if ($userId <= 0 || $action === '') {
     echo json_encode(['success' => false, 'message' => 'Invalid request']);
@@ -33,6 +34,34 @@ try {
         case 'suspend':
             $stmt = $pdo->prepare('UPDATE users SET is_active = 0 WHERE id = ?');
             $stmt->execute([$userId]);
+            // send email if possible
+            try {
+                $userStmt = $pdo->prepare('SELECT email, first_name FROM users WHERE id = ? LIMIT 1');
+                $userStmt->execute([$userId]);
+                $u = $userStmt->fetch(PDO::FETCH_ASSOC);
+                if ($u && filter_var($u['email'], FILTER_VALIDATE_EMAIL)) {
+                    // Use PHPMailer if installed
+                    if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+                        require __DIR__ . '/vendor/autoload.php';
+                        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+                        $mail->isSMTP();
+                        $mail->Host = 'smtp.gmail.com';
+                        $mail->SMTPAuth = true;
+                        $mail->Username = 'craftmartPH@gmail.com';
+                        $mail->Password = 'YOUR_APP_PASSWORD_HERE'; // Use Gmail App Password
+                        $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+                        $mail->Port = 587;
+                        $mail->setFrom('craftmartPH@gmail.com', 'CraftMart');
+                        $mail->addAddress($u['email']);
+                        $mail->Subject = 'Your CraftMart account was suspended';
+                        $body = 'Hello ' . $u['first_name'] . ",\n\nYour account has been suspended.";
+                        if ($reason !== '') { $body .= "\n\nReason: " . $reason; }
+                        $body .= "\n\nIf you believe this is a mistake, please contact support.";
+                        $mail->Body = $body;
+                        try { $mail->send(); } catch (Exception $e) { /* ignore mail errors */ }
+                    }
+                }
+            } catch (Exception $e) { /* ignore */ }
             break;
         case 'activate':
             $stmt = $pdo->prepare('UPDATE users SET is_active = 1 WHERE id = ?');

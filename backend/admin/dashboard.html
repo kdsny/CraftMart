@@ -801,12 +801,12 @@
             `;
 
             actions.innerHTML = `
-                <div class=\"flex flex-wrap gap-2\">
-                    <button class=\"px-4 py-2 rounded-lg border border-craftmart-200 text-craftmart-700 hover:bg-craftmart-50\" onclick=\"openEditUserModal(${u.id})\">Update</button>
-                    <button class=\"px-4 py-2 rounded-lg ${isActive ? 'bg-yellow-500 text-white hover:bg-yellow-600' : 'bg-green-600 text-white hover:bg-green-700'}\" onclick=\"performUserAction(${u.id}, '${isActive ? 'suspend' : 'activate'}')\">${isActive ? 'Suspend' : 'Activate'}</button>
-                    <button class=\"px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700\" onclick=\"confirmDeleteUser(${u.id})\">Delete</button>
-                    ${isPendingSeller ? `<button class=\\\"px-4 py-2 rounded-lg bg-craftmart-600 text-white hover:bg-craftmart-700\\\" onclick=\\\"performUserAction(${u.id}, 'approve_seller')\\\">Approve Seller</button>` : ''}
-                    ${isPendingSeller ? `<button class=\\\"px-4 py-2 rounded-lg bg-gray-100 text-craftmart-800 hover:bg-gray-200\\\" onclick=\\\"performUserAction(${u.id}, 'decline_seller')\\\">Decline</button>` : ''}
+                <div class="flex flex-wrap gap-2">
+                    <button class="px-4 py-2 rounded-lg border border-craftmart-200 text-craftmart-700 hover:bg-craftmart-50" onclick="openEditUserModal(${u.id})">Update</button>
+                    <button class="px-4 py-2 rounded-lg ${isActive ? 'bg-yellow-500 text-white hover:bg-yellow-600' : 'bg-green-600 text-white hover:bg-green-700'}" onclick="performUserAction(${u.id}, '${isActive ? 'suspend' : 'activate'}')">${isActive ? 'Suspend' : 'Activate'}</button>
+                    <button class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700" onclick="confirmDeleteUser(${u.id})">Delete</button>
+                    ${isPendingSeller ? `<button class="px-4 py-2 rounded-lg bg-craftmart-600 text-white hover:bg-craftmart-700" onclick="performUserAction(${u.id}, 'approve_seller')">Approve Seller</button>` : ''}
+                    ${isPendingSeller ? `<button class="px-4 py-2 rounded-lg bg-gray-100 text-craftmart-800 hover:bg-gray-200" onclick="performUserAction(${u.id}, 'decline_seller')">Decline</button>` : ''}
                 </div>
             `;
 
