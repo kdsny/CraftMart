@@ -723,6 +723,30 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Document Viewer Modal -->
+                <div id="documentViewerModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
+                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+                        <div class="p-6 border-b border-craftmart-100 flex items-center justify-between">
+                            <h4 id="documentViewerTitle" class="text-xl font-semibold text-craftmart-900">Document Viewer</h4>
+                            <button onclick="closeDocumentViewer()" class="text-craftmart-600 hover:text-craftmart-800 text-2xl">✕</button>
+                        </div>
+                        <div class="p-6 overflow-auto max-h-[70vh]">
+                            <div class="flex justify-center">
+                                <img id="documentViewerImage" src="" alt="Document" class="max-w-full max-h-[60vh] object-contain rounded-lg shadow-lg">
+                            </div>
+                        </div>
+                        <div class="p-6 border-t border-craftmart-100 flex justify-between items-center">
+                            <div class="text-sm text-craftmart-600">
+                                <span id="documentViewerInfo">Click outside to close</span>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button onclick="downloadDocument()" class="px-4 py-2 bg-craftmart-600 text-white rounded-lg hover:bg-craftmart-700">Download</button>
+                                <button onclick="closeDocumentViewer()" class="px-4 py-2 border border-craftmart-200 text-craftmart-700 rounded-lg hover:bg-craftmart-50">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             `;
 
             // Load users list
@@ -745,13 +769,13 @@
                         <tr class=\"hover:bg-craftmart-50 cursor-pointer\" onclick=\"openUserDetailModal(${u.id})\">
                             <td class="px-4 py-3 text-sm text-craftmart-900">
                                 <span class="inline-flex items-center space-x-3">
-                                    ${u.profile_image ? `<img src="${u.profile_image}" class="w-8 h-8 rounded-full object-cover">` : `<span class=\"w-8 h-8 rounded-full bg-craftmart-600 text-white flex items-center justify-center text-xs\">${(u.first_name||'A').charAt(0)}</span>`}
+                                    ${u.profile_image ? `<img src="../uploads/${u.profile_image}" class="w-8 h-8 rounded-full object-cover" onerror=\"this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNiAxNkMyMC40MTgzIDE2IDI0IDEyLjQxODMgMjQgOEMyNCAzLjU4MTcyIDIwLjQxODMgMCAxNiAwQzExLjU4MTcgMCA4IDMuNTgxNzIgOCA4QzggMTIuNDE4MyAxMS41ODE3IDE2IDE2IDE2WiIgZmlsbD0iIzlCOUJBMCIvPgo8cGF0aCBkPSJNNiAyNkw2IDI2QzYgMjIuNjg2MyA4LjY4NjMgMjAgMTIgMjBIMjBDMjMuMzEzNyAyMCAyNiAyMi42ODYzIDI2IDI2VjI2IiBmaWxsPSIjOUI5QkEwIi8+Cjwvc3ZnPgo='\">` : `<span class=\"w-8 h-8 rounded-full bg-craftmart-600 text-white flex items-center justify-center text-xs\">${(u.first_name||'A').charAt(0)}</span>`}
                                     <span>${u.first_name} ${u.last_name}</span>
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-sm text-craftmart-700">${u.email}</td>
                             <td class="px-4 py-3 text-sm text-craftmart-700">${u.phone || ''}</td>
-                            <td class="px-4 py-3 text-sm"><span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${u.user_type === 'seller' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}">${u.user_type}${(u.user_type==='seller' && (u.is_verified===null || Number(u.is_verified)===0)) ? ' • pending' : ''}</span></td>
+                            <td class="px-4 py-3 text-sm"><span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${u.user_type === 'seller' ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800'}">${u.user_type}${(u.user_type==='seller' && (u.kyc_status === 'pending' || u.is_verified===null || Number(u.is_verified)===0)) ? ' • pending' : ''}</span></td>
                             <td class="px-4 py-3 text-sm text-craftmart-600">${u.created_at}</td>
                         </tr>
                     `).join('');
@@ -769,12 +793,12 @@
             const body = document.getElementById('userDetailBody');
             const actions = document.getElementById('userDetailActions');
             const isSeller = u.user_type === 'seller';
-            const isPendingSeller = isSeller && (u.is_verified === null || Number(u.is_verified) === 0);
+            const isPendingSeller = isSeller && (u.kyc_status === 'pending' || u.is_verified === null || Number(u.is_verified) === 0);
             const isActive = Number(u.is_active) === 1;
 
             body.innerHTML = `
                 <div class=\"flex items-center space-x-4\">
-                    ${u.profile_image ? `<img src=\"${u.profile_image}\" class=\"w-16 h-16 rounded-full object-cover ring-2 ring-craftmart-100\">` : `<span class=\"w-16 h-16 rounded-full bg-craftmart-600 text-white flex items-center justify-center text-xl ring-2 ring-craftmart-100\">${(u.first_name||'A').charAt(0)}</span>`}
+                    ${u.profile_image ? `<img src=\"../uploads/${u.profile_image}\" class=\"w-16 h-16 rounded-full object-cover ring-2 ring-craftmart-100\" onerror=\"this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0zMiAzMkMzOC42Mjc0IDMyIDQ0IDI2LjYyNzQgNDQgMjBDNDQgMTMuMzcyNiAzOC42Mjc0IDggMzIgOEMyNS4zNzI2IDggMjAgMTMuMzcyNiAyMCAyMEMyMCAyNi42Mjc0IDI1LjM3MjYgMzIgMzIgMzJaIiBmaWxsPSIjOUI5QkEwIi8+CjxwYXRoIGQ9Ik0xMiA1MkwxMiA1MkMxMiA0NS4zNzI2IDE3LjM3MjYgNDAgMjQgNDBINDBDNDcuNzMxOSA0MCA1MiA0NS4zNzI2IDUyIDUyVjUyIiBmaWxsPSIjOUI5QkEwIi8+Cjwvc3ZnPgo='\">` : `<span class=\"w-16 h-16 rounded-full bg-craftmart-600 text-white flex items-center justify-center text-xl ring-2 ring-craftmart-100\">${(u.first_name||'A').charAt(0)}</span>`}
                     <div>
                         <div class=\"text-craftmart-900 text-xl font-semibold\">${u.first_name} ${u.last_name}</div>
                         <div class=\"mt-1 inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${u.user_type === 'seller' ? 'bg-purple-100 text-purple-800' : u.user_type === 'buyer' ? 'bg-green-100 text-green-800' : 'bg-craftmart-100 text-craftmart-800'}\">${u.user_type}${isPendingSeller ? ' • pending approval' : ''}</div>
@@ -798,15 +822,35 @@
                         <div class=\"text-sm text-craftmart-900\">${isActive ? 'Active' : 'Suspended'}</div>
                     </div>
                 </div>
+                ${isSeller ? `
+                <div class=\"mt-6 border-t border-craftmart-200 pt-6\">
+                    <h4 class=\"text-lg font-semibold text-craftmart-900 mb-4\">Seller Documents</h4>
+                    <div class=\"p-4 rounded-lg bg-craftmart-50 border border-craftmart-200\">
+                        <div class=\"text-sm font-medium text-craftmart-800 mb-2\">National ID Document</div>
+                        <div class=\"flex items-center space-x-3\">
+                            ${u.national_id_image ? `
+                                <img src=\"../uploads/${u.national_id_image}\" alt=\"National ID\" class=\"w-20 h-20 rounded-lg object-cover border border-craftmart-300\" onerror=\"this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjgwIiBoZWlnaHQ9IjgwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00MCA0MEM0Ni42Mjc0IDQwIDUyIDM0LjYyNzQgNTIgMjhDNTIgMjEuMzcyNiA0Ni42Mjc0IDE2IDQwIDE2QzMzLjM3MjYgMTYgMjggMjEuMzcyNiAyOCAyOEMyOCAzNC42Mjc0IDMzLjM3MjYgNDAgNDAgNDBaIiBmaWxsPSIjOUI5QkEwIi8+CjxwYXRoIGQ9Ik0xNiA2NEwxNiA2NEMxNiA1Ni4yNjgxIDIyLjI2ODEgNTAgMzAgNTBINDBDNDkuNzMxOSA1MCA1NiA1Ni4yNjgxIDU2IDY0VjY0IiBmaWxsPSIjOUI5QkEwIi8+Cjwvc3ZnPgo='\">
+                                <button onclick=\"openDocumentViewer('../uploads/${u.national_id_image}', 'National ID Document')\" class=\"px-3 py-1 bg-craftmart-600 text-white text-xs rounded hover:bg-craftmart-700\">View Full Size</button>
+                            ` : `
+                                <div class=\"w-20 h-20 rounded-lg bg-gray-200 flex items-center justify-center text-gray-500 text-xs\">No ID Uploaded</div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
             `;
 
             actions.innerHTML = `
                 <div class="flex flex-wrap gap-2">
-                    <button class="px-4 py-2 rounded-lg border border-craftmart-200 text-craftmart-700 hover:bg-craftmart-50" onclick="openEditUserModal(${u.id})">Update</button>
-                    <button class="px-4 py-2 rounded-lg ${isActive ? 'bg-yellow-500 text-white hover:bg-yellow-600' : 'bg-green-600 text-white hover:bg-green-700'}" onclick="performUserAction(${u.id}, '${isActive ? 'suspend' : 'activate'}')">${isActive ? 'Suspend' : 'Activate'}</button>
-                    <button class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700" onclick="confirmDeleteUser(${u.id})">Delete</button>
-                    ${isPendingSeller ? `<button class="px-4 py-2 rounded-lg bg-craftmart-600 text-white hover:bg-craftmart-700" onclick="performUserAction(${u.id}, 'approve_seller')">Approve Seller</button>` : ''}
-                    ${isPendingSeller ? `<button class="px-4 py-2 rounded-lg bg-gray-100 text-craftmart-800 hover:bg-gray-200" onclick="performUserAction(${u.id}, 'decline_seller')">Decline</button>` : ''}
+                    ${!isPendingSeller ? `
+                        <button class="px-4 py-2 rounded-lg border border-craftmart-200 text-craftmart-700 hover:bg-craftmart-50" onclick="openEditUserModal(${u.id})">Update</button>
+                        <button class="px-4 py-2 rounded-lg ${isActive ? 'bg-yellow-500 text-white hover:bg-yellow-600' : 'bg-green-600 text-white hover:bg-green-700'}" onclick="performUserAction(${u.id}, '${isActive ? 'suspend' : 'activate'}')">${isActive ? 'Suspend' : 'Activate'}</button>
+                        <button class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700" onclick="confirmDeleteUser(${u.id})">Delete</button>
+                    ` : ''}
+                    ${isPendingSeller ? `
+                        <button class="px-4 py-2 rounded-lg bg-craftmart-600 text-white hover:bg-craftmart-700" onclick="performUserAction(${u.id}, 'approve_seller')">Approve Seller</button>
+                        <button class="px-4 py-2 rounded-lg bg-gray-100 text-craftmart-800 hover:bg-gray-200" onclick="performUserAction(${u.id}, 'decline_seller')">Decline</button>
+                    ` : ''}
                 </div>
             `;
 
@@ -828,6 +872,8 @@
                 const data = await res.json();
                 if (data.success) {
                     closeUserDetailModal();
+                    // Clear cache and reload users to get updated status
+                    usersCache = [];
                     await loadUsersList();
                     await loadDashboardData();
                     showToast('Action completed');
@@ -1046,6 +1092,57 @@
                 </div>
             `).join('');
         }
+
+        // Document Viewer Functions
+        let currentDocumentUrl = '';
+        
+        function openDocumentViewer(imageUrl, title) {
+            currentDocumentUrl = imageUrl;
+            const modal = document.getElementById('documentViewerModal');
+            const image = document.getElementById('documentViewerImage');
+            const modalTitle = document.getElementById('documentViewerTitle');
+            const info = document.getElementById('documentViewerInfo');
+            
+            modalTitle.textContent = title;
+            image.src = imageUrl;
+            info.textContent = `Viewing: ${title}`;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        function closeDocumentViewer() {
+            const modal = document.getElementById('documentViewerModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            currentDocumentUrl = '';
+        }
+        
+        function downloadDocument() {
+            if (currentDocumentUrl) {
+                const link = document.createElement('a');
+                link.href = currentDocumentUrl;
+                link.download = currentDocumentUrl.split('/').pop() || 'document';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('documentViewerModal');
+            if (e.target === modal) {
+                closeDocumentViewer();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDocumentViewer();
+            }
+        });
     </script>
 </body>
 </html>

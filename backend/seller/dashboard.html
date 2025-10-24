@@ -5,34 +5,524 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CraftMart Seller Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'craftmart': {
+                            '50': '#fef7f3',
+                            '100': '#fdeee6',
+                            '200': '#fbd9c7',
+                            '300': '#f8c4a8',
+                            '400': '#f4a47a',
+                            '500': '#ad6234',
+                            '600': '#9c572e',
+                            '700': '#8b4c28',
+                            '800': '#7a4122',
+                            '900': '#69361c',
+                            '950': '#582b16',
+                        },
+                    },
+                }
+            }
+        }
+    </script>
 </head>
-<body class="min-h-screen bg-[#f8f5f1]">
-    <header class="bg-craftmart-700 text-white px-6 py-4 flex items-center justify-between">
-        <h1 class="font-bold">Seller Dashboard</h1>
-        <button id="logoutBtn" class="bg-white/15 hover:bg-white/25 px-3 py-1 rounded">Logout</button>
-    </header>
-    <main class="max-w-6xl mx-auto p-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-xl shadow p-6">
-                <h3 class="font-semibold mb-2">Status</h3>
-                <p id="kycStatus" class="text-sm text-gray-700"></p>
-            </div>
-            <div class="bg-white rounded-xl shadow p-6 md:col-span-2">
-                <h3 class="font-semibold mb-2">Welcome</h3>
-                <p class="text-sm text-gray-700">This is a starter dashboard. Product management and orders will be added next.</p>
+<body class="bg-craftmart-50">
+    <div id="toast" class="hidden fixed top-4 right-4 bg-white border border-craftmart-200 text-craftmart-900 px-4 py-3 rounded-lg shadow-lg z-50"></div>
+    
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out" id="sidebar">
+        <div class="flex items-center justify-start h-16 bg-white border-b border-craftmart-200 px-4">
+            <div class="flex items-center space-x-3">
+                <img id="sidebarProfileImage" src="" alt="Profile" class="w-10 h-10 rounded-full object-cover hidden">
+                <div id="sidebarProfileFallback" class="w-10 h-10 bg-craftmart-600 rounded-full flex items-center justify-center">
+                    <span id="sidebarProfileInitial" class="text-white font-bold">S</span>
+                </div>
+                <div class="flex flex-col">
+                    <span id="sidebarProfileName" class="text-craftmart-800 font-semibold leading-tight">Seller User</span>
+                    <span class="text-xs text-craftmart-600 leading-tight">Seller</span>
+                </div>
             </div>
         </div>
-    </main>
+        
+        <nav class="mt-8">
+            <div class="px-4 space-y-2">
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-600 bg-craftmart-100 rounded-lg" data-section="dashboard">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"></path>
+                    </svg>
+                    Dashboard
+                </a>
+                
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-700 hover:bg-craftmart-50 rounded-lg transition-colors" data-section="products">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    Products
+                </a>
+                
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-700 hover:bg-craftmart-50 rounded-lg transition-colors" data-section="orders">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    Orders
+                </a>
+                
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-700 hover:bg-craftmart-50 rounded-lg transition-colors" data-section="analytics">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    Analytics
+                </a>
+                
+                <a href="#" class="flex items-center px-4 py-3 text-craftmart-700 hover:bg-craftmart-50 rounded-lg transition-colors" data-section="profile">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Profile
+                </a>
+                
+                <!-- Logout Button -->
+                <button onclick="logout()" class="flex items-center px-4 py-3 text-red-600 hover:text-red-800 hover:bg-red-50 font-medium transition-colors duration-200 rounded-lg w-full">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:ml-64">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-sm border-b border-craftmart-100">
+            <div class="grid grid-cols-3 items-center px-6 py-4">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="lg:hidden text-craftmart-600 hover:text-craftmart-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <h1 class="text-2xl font-bold text-craftmart-900 ml-4" id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="flex items-center justify-center">
+                    <img src="../logo/CraftMart_logo.png" alt="CraftMart Logo" class="h-8 w-auto">
+                </div>
+                
+                <div class="flex items-center space-x-4 justify-end">
+                    <!-- Notifications -->
+                    <button class="relative text-craftmart-600 hover:text-craftmart-800">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span class="absolute -top-1 -right-1 bg-craftmart-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">1</span>
+                    </button>
+                    
+                    <!-- Seller Profile -->
+                    <div class="flex items-center space-x-3">
+                        <button onclick="loadProfileSection()" class="flex items-center space-x-3 hover:bg-craftmart-50 p-2 rounded-lg transition-colors">
+                            <img id="topbarProfileImage" src="" alt="Profile" class="w-8 h-8 rounded-full object-cover hidden">
+                            <div id="topbarProfileFallback" class="w-8 h-8 bg-craftmart-600 rounded-full flex items-center justify-center">
+                                <span class="text-white font-bold text-sm" id="sellerInitial">S</span>
+                            </div>
+                            <div class="hidden md:block">
+                                <p class="text-sm font-medium text-craftmart-900" id="sellerName">Seller User</p>
+                                <p class="text-xs text-craftmart-600">Seller</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-6">
+            <!-- Pending Approval Notice -->
+            <div id="pendingNotice" class="hidden mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm text-yellow-700">
+                            <strong>Account Pending Approval:</strong> Your seller account is currently under review. You'll receive access to all features once approved by our admin team.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboard-section">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-craftmart-600">Total Products</p>
+                                <p class="text-3xl font-bold text-craftmart-900" id="totalProducts">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-craftmart-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-green-600 mt-2">Add your first product</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-craftmart-600">Total Orders</p>
+                                <p class="text-3xl font-bold text-craftmart-900" id="totalOrders">0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-craftmart-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-green-600 mt-2">No orders yet</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-craftmart-600">Revenue</p>
+                                <p class="text-3xl font-bold text-craftmart-900" id="totalRevenue">₱0</p>
+                            </div>
+                            <div class="w-12 h-12 bg-craftmart-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-green-600 mt-2">Start selling to earn</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-craftmart-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-craftmart-600">Account Status</p>
+                                <p class="text-3xl font-bold text-craftmart-900" id="accountStatus">Pending</p>
+                            </div>
+                            <div class="w-12 h-12 bg-craftmart-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="text-sm text-yellow-600 mt-2">Awaiting approval</p>
+                    </div>
+                </div>
+
+                <!-- Getting Started Section -->
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900">Getting Started</h3>
+                    </div>
+                    <div class="p-6">
+                        <div id="pendingContent" class="text-center py-8">
+                            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-xl font-semibold text-craftmart-900 mb-2">Account Under Review</h4>
+                            <p class="text-craftmart-600 mb-6">Your seller application is being reviewed by our admin team. You'll receive full access once approved.</p>
+                            <div class="bg-craftmart-50 rounded-lg p-4 max-w-md mx-auto">
+                                <p class="text-sm text-craftmart-700">
+                                    <strong>What happens next?</strong><br>
+                                    • Admin reviews your documents<br>
+                                    • You'll receive an email notification<br>
+                                    • Full dashboard access will be unlocked
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div id="approvedContent" class="hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div class="text-center p-6 bg-craftmart-50 rounded-lg">
+                                    <div class="w-12 h-12 bg-craftmart-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 class="font-semibold text-craftmart-900 mb-2">Add Products</h4>
+                                    <p class="text-sm text-craftmart-600">Start by adding your first product to the marketplace.</p>
+                                </div>
+                                <div class="text-center p-6 bg-craftmart-50 rounded-lg">
+                                    <div class="w-12 h-12 bg-craftmart-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 class="font-semibold text-craftmart-900 mb-2">Track Analytics</h4>
+                                    <p class="text-sm text-craftmart-600">Monitor your sales performance and customer insights.</p>
+                                </div>
+                                <div class="text-center p-6 bg-craftmart-50 rounded-lg">
+                                    <div class="w-12 h-12 bg-craftmart-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                        </svg>
+                                    </div>
+                                    <h4 class="font-semibold text-craftmart-900 mb-2">Manage Orders</h4>
+                                    <p class="text-sm text-craftmart-600">Process and fulfill customer orders efficiently.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other sections will be loaded dynamically -->
+            <div id="dynamic-content" class="hidden">
+                <!-- Content will be loaded here -->
+            </div>
+        </main>
+    </div>
+
     <script>
-        const user = JSON.parse(localStorage.getItem('sellerUser') || 'null');
-        const token = localStorage.getItem('sellerToken');
-        if (!token) { window.location.href = 'index.html'; }
-        document.getElementById('kycStatus').textContent = user?.kyc_status ? ('KYC Status: ' + user.kyc_status) : 'KYC Status: pending';
-        document.getElementById('logoutBtn').addEventListener('click', () => {
+        // Check authentication
+        if (!localStorage.getItem('sellerToken')) {
+            window.location.href = 'index.html';
+        }
+
+        // Load seller info
+        const sellerUser = JSON.parse(localStorage.getItem('sellerUser') || '{}');
+        const isApproved = sellerUser.kyc_status === 'approved' && sellerUser.is_verified === 1;
+        
+        // Update UI based on approval status
+        if (isApproved) {
+            document.getElementById('pendingNotice').classList.add('hidden');
+            document.getElementById('pendingContent').classList.add('hidden');
+            document.getElementById('approvedContent').classList.remove('hidden');
+            document.getElementById('accountStatus').textContent = 'Approved';
+            document.querySelector('#accountStatus').nextElementSibling.textContent = 'Ready to sell';
+            document.querySelector('#accountStatus').nextElementSibling.className = 'text-sm text-green-600 mt-2';
+        } else {
+            document.getElementById('pendingNotice').classList.remove('hidden');
+        }
+
+        // Update profile info
+        document.getElementById('sellerName').textContent = (sellerUser.first_name || 'Seller') + ' ' + (sellerUser.last_name || 'User');
+        document.getElementById('sellerInitial').textContent = (sellerUser.first_name || 'S').charAt(0);
+        
+        if (sellerUser.profile_image) {
+            const img = document.getElementById('topbarProfileImage');
+            img.src = '../uploads/' + sellerUser.profile_image;
+            img.classList.remove('hidden');
+            document.getElementById('topbarProfileFallback').classList.add('hidden');
+        }
+
+        // Sidebar toggle for mobile
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Navigation
+        document.querySelectorAll('[data-section]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.getAttribute('data-section');
+                
+                if (!isApproved && section !== 'dashboard' && section !== 'profile') {
+                    showToast('This feature is locked until your account is approved', 'warning');
+                    return;
+                }
+                
+                loadSection(section);
+                
+                // Update active state
+                document.querySelectorAll('[data-section]').forEach(l => l.classList.remove('bg-craftmart-100', 'text-craftmart-600'));
+                document.querySelectorAll('[data-section]').forEach(l => l.classList.add('text-craftmart-700', 'hover:bg-craftmart-50'));
+                this.classList.remove('text-craftmart-700', 'hover:bg-craftmart-50');
+                this.classList.add('bg-craftmart-100', 'text-craftmart-600');
+            });
+        });
+
+        function loadSection(section) {
+            const pageTitle = document.getElementById('pageTitle');
+            const dashboardSection = document.getElementById('dashboard-section');
+            const dynamicContent = document.getElementById('dynamic-content');
+            
+            if (section === 'dashboard') {
+                dashboardSection.classList.remove('hidden');
+                dynamicContent.classList.add('hidden');
+                pageTitle.textContent = 'Dashboard';
+            } else {
+                dashboardSection.classList.add('hidden');
+                dynamicContent.classList.remove('hidden');
+                
+                switch(section) {
+                    case 'products':
+                        pageTitle.textContent = 'Products';
+                        loadProductsSection();
+                        break;
+                    case 'orders':
+                        pageTitle.textContent = 'Orders';
+                        loadOrdersSection();
+                        break;
+                    case 'analytics':
+                        pageTitle.textContent = 'Analytics';
+                        loadAnalyticsSection();
+                        break;
+                    case 'profile':
+                        pageTitle.textContent = 'Profile';
+                        loadProfileSection();
+                        break;
+                }
+            }
+        }
+
+        function loadProductsSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-craftmart-900">My Products</h3>
+                            <button class="bg-craftmart-600 text-white px-4 py-2 rounded-lg hover:bg-craftmart-700 transition-colors">
+                                Add Product
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-craftmart-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-xl font-semibold text-craftmart-900 mb-2">No Products Yet</h4>
+                            <p class="text-craftmart-600 mb-6">Start building your store by adding your first product.</p>
+                            <button class="bg-craftmart-600 text-white px-6 py-3 rounded-lg hover:bg-craftmart-700 transition-colors">
+                                Add Your First Product
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadOrdersSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900">Order Management</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-craftmart-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-xl font-semibold text-craftmart-900 mb-2">No Orders Yet</h4>
+                            <p class="text-craftmart-600">Orders will appear here once customers start buying your products.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadAnalyticsSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900">Sales Analytics</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-center py-8">
+                            <div class="w-16 h-16 bg-craftmart-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg class="w-8 h-8 text-craftmart-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <h4 class="text-xl font-semibold text-craftmart-900 mb-2">Analytics Coming Soon</h4>
+                            <p class="text-craftmart-600">Track your sales performance and customer insights here.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadProfileSection() {
+            document.getElementById('dynamic-content').innerHTML = `
+                <div class="bg-white rounded-xl shadow-sm border border-craftmart-100">
+                    <div class="p-6 border-b border-craftmart-100">
+                        <h3 class="text-lg font-semibold text-craftmart-900">Profile Settings</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center space-x-6 mb-6">
+                            <div class="relative">
+                                <img src="../uploads/${sellerUser.profile_image || 'default.jpg'}" alt="Profile" class="w-24 h-24 rounded-full object-cover border-4 border-craftmart-200" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik00OCA0OEM1Ni44MzcgNDggNjQgNDAuODM3IDY0IDMyQzY0IDIzLjE2MyA1Ni44MzcgMTYgNDggMTZDNDAuMTYzIDE2IDMyIDIzLjE2MyAzMiAzMkMzMiA0MC44MzcgNDAuMTYzIDQ4IDQ4IDQ4WiIgZmlsbD0iIzlCOUJBMCIvPgo8cGF0aCBkPSJNMTYgODBMMTYgODBDMTYgNjguOTU0IDI0Ljk1NCA2MCAzNiA2MEg2MEM3MS4wNDYgNjAgODAgNjguOTU0IDgwIDgwVjgwIiBmaWxsPSIjOUI5QkEwIi8+Cjwvc3ZnPgo='">
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-medium text-craftmart-900">${sellerUser.first_name} ${sellerUser.last_name}</h4>
+                                <p class="text-craftmart-600">${sellerUser.email}</p>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium ${isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}">${isApproved ? 'Approved' : 'Pending Approval'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-craftmart-700 mb-2">First Name</label>
+                                <input type="text" value="${sellerUser.first_name || ''}" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-craftmart-700 mb-2">Last Name</label>
+                                <input type="text" value="${sellerUser.last_name || ''}" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-craftmart-700 mb-2">Email</label>
+                                <input type="email" value="${sellerUser.email || ''}" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" readonly>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-craftmart-700 mb-2">Phone</label>
+                                <input type="tel" value="${sellerUser.phone || ''}" class="w-full px-4 py-3 border border-craftmart-200 rounded-lg focus:ring-2 focus:ring-craftmart-500 focus:border-craftmart-500" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 p-4 bg-craftmart-50 rounded-lg">
+                            <h5 class="font-medium text-craftmart-900 mb-2">Account Status</h5>
+                            <p class="text-sm text-craftmart-700">
+                                ${isApproved ? 
+                                    'Your account has been approved! You now have full access to all seller features.' : 
+                                    'Your account is currently under review. You\'ll receive an email notification once approved.'
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const styles = type === 'success' ? 'bg-green-50 text-green-800 border-green-200'
+                         : type === 'warning' ? 'bg-yellow-50 text-yellow-800 border-yellow-200'
+                         : type === 'error' ? 'bg-red-50 text-red-800 border-red-200'
+                         : 'bg-craftmart-50 text-craftmart-800 border-craftmart-200';
+            toast.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 ${styles}`;
+            toast.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function logout() {
             localStorage.removeItem('sellerToken');
             localStorage.removeItem('sellerUser');
             window.location.href = 'index.html';
-        });
+        }
     </script>
 </body>
 </html>

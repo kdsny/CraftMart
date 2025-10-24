@@ -72,12 +72,18 @@ try {
             $stmt->execute([$userId]);
             break;
         case 'approve_seller':
-            $stmt = $pdo->prepare('UPDATE seller_profiles SET is_verified = 1 WHERE user_id = ?');
-            $stmt->execute([$userId]);
+            // Update both seller_profiles and users table
+            $stmt1 = $pdo->prepare('UPDATE seller_profiles SET is_verified = 1 WHERE user_id = ?');
+            $stmt1->execute([$userId]);
+            $stmt2 = $pdo->prepare('UPDATE users SET kyc_status = "approved" WHERE id = ?');
+            $stmt2->execute([$userId]);
             break;
         case 'decline_seller':
-            $stmt = $pdo->prepare('UPDATE seller_profiles SET is_verified = 0 WHERE user_id = ?');
-            $stmt->execute([$userId]);
+            // Update both seller_profiles and users table
+            $stmt1 = $pdo->prepare('UPDATE seller_profiles SET is_verified = 0 WHERE user_id = ?');
+            $stmt1->execute([$userId]);
+            $stmt2 = $pdo->prepare('UPDATE users SET kyc_status = "rejected" WHERE id = ?');
+            $stmt2->execute([$userId]);
             break;
         default:
             echo json_encode(['success' => false, 'message' => 'Unknown action']);
